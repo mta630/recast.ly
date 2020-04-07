@@ -1,15 +1,6 @@
 import VideoListEntry from './VideoListEntry.js';
 import Search from './Search.js';
 
-
-// var VideoList = (exampleVideoData) (
-//   <div className="video-list media">
-//     {exampleVideoData.map( (video) =>
-//       <   V  ideoListEntry />)}
-//   </div>
-// );
-
-
 class VideoList extends React.Component {
   constructor (props) {
     super(props);
@@ -19,7 +10,7 @@ class VideoList extends React.Component {
   render () {
     return (
       <div className='video-list media'>
-        {this.props.videoList.map((video) => <VideoListEntry video={video} key={video.etag} />)}
+        {this.props.videoList ? this.props.videoList.map((video) => <VideoListEntry video={video} videoClick={this.props.videoClick} key={video.etag} />) : 'No videos to display'}
       </div>
     );
   }
