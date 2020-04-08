@@ -3,7 +3,7 @@ import Search from './Search.js';
 import VideoPlayer from './VideoPlayer.js';
 import VideoDescription from './VideoDescription.js';
 import searchYouTube from '../lib/searchYouTube.js';
-import searchVideoDetails from '../lib/searchYouTube.js';
+import searchVideo from '../lib/searchVideo.js';
 import YOUTUBE_API_KEY from '../config/youtube.js';
 
 class App extends React.Component {
@@ -13,18 +13,15 @@ class App extends React.Component {
     this.state = {
       videoList: [],
       nowPlaying: null,
-      fullDescription: []
+      fullDescription: null
     };
-  }
-
-  selectVideo(selectedVideo) {
-    this.setState({
-      nowPlaying: selectedVideo
-    });
   }
 
   componentDidMount() {
     this.getYouTubeVideos('Guy on a buffalo');
+    if (this.state.nowPlaying) {
+      this.handleDescriptionUpdate(this.state.nowPlaying);
+    }
   }
 
   getYouTubeVideos(searchTerm) {
@@ -34,21 +31,27 @@ class App extends React.Component {
         videoList: newList,
         nowPlaying: newList[0]
       }));
+    if (this.state.nowPlaying) {
+      this.handleDescriptionUpdate(this.state.nowPlaying);
+    }
   }
 
-
-
-  setNewList(data) {
-    this.setState({
-      nowPlaying: data[0],
-      videoList: data
-    });
+  handleDescriptionUpdate(video) {
+    var obj = {id: video.id.videoId, key: YOUTUBE_API_KEY};
+    searchVideo(obj, (newList) =>
+      this.setState({
+        fullDescription: newList
+      }));
   }
 
   handleVideoClick(video) {
     this.setState({
       nowPlaying: video,
     });
+    if (this.state.nowPlaying) {
+      this.handleDescriptionUpdate(this.state.nowPlaying);
+      console.log(this.state.fullDescription);
+    }
   }
 
 
@@ -64,9 +67,8 @@ class App extends React.Component {
         </nav>
         <div className="row">
           <div className="col-md-7">
-            {console.log(this.state.nowPlaying)}
             <VideoPlayer video={this.state.nowPlaying}/>
-            <VideoDescription fullDescription={this.state.videoDescription} />
+            <VideoDescription fullDescription={this.state.fullDescription} />
           </div>
           <div className="col-md-5">
             <VideoList videoList={this.state.videoList} handleVideoClick={this.handleVideoClick.bind(this)}/>
